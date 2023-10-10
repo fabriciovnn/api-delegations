@@ -4,11 +4,12 @@ export class Weapon {
     private _caliber: number,
     private _name: string,
     private _createdAt: Date,
-    private _type?: number,
-    private _length?: number,
-    private _weight?: number,
-    private _serialNumber?: string,
-    private _description?: string
+    private _updatedAt: Date,
+    private _type?: number | null,
+    private _length?: number | null,
+    private _weight?: number | null,
+    private _serialNumber?: string | null,
+    private _description?: string | null
   ) {}
 
   public toJSON() {
@@ -16,7 +17,7 @@ export class Weapon {
       id: this._id,
       name: this._name,
       type: this._type,
-      description: this._description
+      desciption: this._description,
     };
   }
 }

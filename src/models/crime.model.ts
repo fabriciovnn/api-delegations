@@ -1,4 +1,4 @@
-import { Criminal, Weapon } from "./";
+import { Criminal, Weapon } from ".";
 
 export class Crime {
   constructor(
@@ -8,21 +8,19 @@ export class Crime {
     private _article: string,
     private _severity: number,
     private _victims: string,
-    private _createdAt: Date,
-    private _updatedAt: Date,
     private _criminal: Criminal,
     private _weapon: Weapon,
-    private _address?: string
+    private _address?: string | null
   ) {}
 
-  public toJSON() {
-    return{
+  public toJson() {
+    return {
       id: this._id,
       description: this._description,
       crimeDate: this._crimeDate,
       victims: this._victims,
-      criminal: this._criminal,
-      weapon: this._weapon
+      criminal: this._criminal.toJSON(),
+      weapon: this._weapon.toJSON(),
     };
   }
 }

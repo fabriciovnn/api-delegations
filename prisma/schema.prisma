@@ -1,60 +1,73 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
+
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url = env("DATABASE_URL")
 }
 
-model Criminals {
-  id String @id @db.Uuid @default(uuid())
-  name String @db.VarChar(150)
-  birthDate DateTime @db.Timestamp() @map("birth_date")
-  cpf String? @db.VarChar(11) @unique
-  gender String @db.VarChar(100)
-  rg String? @db.VarChar(13) @unique
-  cnh String? @db.VarChar(20)
-  description String? @db.VarChar(255)
-  address String? @db.VarChar(255)
-  createAt DateTime @db.Timestamp() @default(now()) @map("create_at")
-  updateAt DateTime @db.Timestamp() @updatedAt @map("update_at")
-
-  crimes Crimes[]
-
-  @@map("criminals")
-}
-
-model Weapons {
-    id String @id @db.Uuid @default(uuid())
-    type Int? @db.Integer
-    caliber Float @db.DoublePrecision
-    name String @db.VarChar(150)
-    serialNumber String? @db.VarChar(100) @map("serial_number")
-    length Float? @db.DoublePrecision
-    weight Float? @db.DoublePrecision
+// CRIMINOSOS
+model Criminal {
+    id          String @db.Uuid @id @default(uuid())
+    name        String @db.VarChar(255)
+    birthDate   DateTime @db.Timestamp() @map("birth_date")
+    cpf         String? @db.VarChar(11) @unique
+    gender      String @db.VarChar(100)
+    rg          String? @db.VarChar(16) @unique
+    cnh         String? @db.VarChar(20)
     description String? @db.VarChar(255)
-    createAt DateTime @db.Timestamp() @default(now()) @map("create_at")
-    updateAt DateTime @db.Timestamp() @updatedAt @map("update_at")
+    address     String? @db.VarChar(255)
 
-    crimeID String @db.Uuid @unique @map("crime_id")
-    crime Crimes @relation(fields: [crimeID], references: [id])
-    @@map("weapons")
+    // - 1,N
+    crimes Crime[]
+
+    createdAt   DateTime @db.Timestamp() @default(now()) @map("created_at")
+    updatedAt   DateTime @db.Timestamp() @updatedAt @map("update_at")
+
+    @@map("criminals")
 }
 
-model Crimes {
-    id String @id @db.Uuid @default(uuid())
-    description String @db.VarChar(255)
-    crimeDate DateTime @db.Timestamp() @map("crime_date")
-    article String @db.VarChar(100)
-    severity Int @db.Integer
-    victims String @db.VarChar(150)
-    address String? @db.VarChar(255)
-    createAt DateTime @db.Timestamp() @default(now()) @map("create_at")
-    updateAt DateTime @db.Timestamp() @updatedAt @map("update_at")
+// ARMAS
+model Weapon {
+    id          String @db.Uuid @id @default(uuid())
+    type        Int? @db.Integer
+    caliber     Float @db.DoublePrecision
+    name        String @db.VarChar(155)
+    serialNumber String? @db.VarChar(155) @map("serial_number")
+    length      Float? @db.Real
+    weight      Float? @db.Real
+    description String? @db.VarChar(255)
 
-    criminalID String @db.Uuid @map("criminal_id")
-    criminal Criminals @relation(fields: [criminalID], references: [id])
-    weapon Weapons[]
+    // - 0,1
+    crime Crime?
+
+    createdAt   DateTime @db.Timestamp() @default(now()) @map("created_at")
+    updatedAt   DateTime @db.Timestamp() @updatedAt @map("update_at")
+
+    @@map("weapons")    
+} 
+
+//CRIMES
+model Crime {
+    id          String @db.Uuid @id @default(uuid())
+    description String @db.VarChar(255)
+    crimeDate   DateTime @db.Timestamp() @default(now()) @map("crime_date")
+    article     String @db.VarChar(100)
+    severity    Int @db.Integer
+    victims     String @db.VarChar(150)
+    address     String? @db.VarChar(255)
+
+    // - 1,1
+    criminalId  String @db.Uuid @map("criminal_id")
+    criminals   Criminal @relation(fields: [criminalId], references: [id])
+
+    // - 1,1
+    weaponId    String @db.Uuid @map("weapon_id") @unique
+    weapon      Weapon @relation(fields: [weaponId], references: [id])
+
+    createdAt   DateTime @db.Timestamp() @default(now()) @map("created_at")
+    updatedAt   DateTime @db.Timestamp() @updatedAt @map("update_at")
 
     @@map("crimes")
-}
+}          
